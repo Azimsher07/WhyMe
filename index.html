@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhyMe | Student Mental Health Support</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fa-solid fa-leaf"></i> WhyMe
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active">Home</a>
+                <a href="#">Resources</a>
+                <a href="#">About</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="hero-section" class="hero-section">
+            <div class="hero-content">
+                <div class="badge">AI-Powered Support</div>
+                <h1>Your Safe Space for <br><span class="gradient-text">Mental Clarity</span></h1>
+                <p>Feeling overwhelmed? Talk to our empathetic AI companion designed specifically for students. No
+                    judgment, just support.</p>
+                <button id="start-chat-btn" class="cta-button">
+                    Start Conversation <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card card-1">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                    <span>Stress Relief</span>
+                </div>
+                <div class="floating-card card-2">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>Mindfulness</span>
+                </div>
+                <div class="glow-circle"></div>
+            </div>
+        </section>
+
+        <!-- Chat Interface (Hidden by default) -->
+        <section id="chat-section" class="chat-section hidden">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="ai-profile">
+                        <div class="avatar">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="status-info">
+                            <h3>WhyMe AI</h3>
+                            <span class="status-dot"></span> Online
+                        </div>
+                    </div>
+                    <button id="close-chat-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div id="chat-messages" class="chat-messages">
+                    <!-- Messages will appear here -->
+                    <div class="message ai-message">
+                        <div class="message-content">
+                            Hello! I'm here to listen. How are you feeling today?
+                        </div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <form id="chat-form">
+                        <input type="text" id="user-input" placeholder="Type your thoughts here..." autocomplete="off">
+                        <button type="submit" id="send-btn">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Questionnaire Section (Hidden by default) -->
+    <section id="questionnaire-section" class="chat-section hidden">
+        <div class="chat-container" style="max-width: 600px; height: auto; max-height: 90vh; overflow-y: auto;">
+            <div class="chat-header">
+                <div class="ai-profile">
+                    <div class="avatar">
+                        <i class="fa-solid fa-clipboard-question"></i>
+                    </div>
+                    <div class="status-info">
+                        <h3>Tell us about yourself</h3>
+                        <span class="status-info">This helps us support you better</span>
+                    </div>
+                </div>
+                <button id="close-questionnaire-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div id="questionnaire-content" class="chat-messages">
+                <!-- Questions will be injected here -->
+            </div>
+
+            <div class="chat-input-area" style="justify-content: space-between; display: flex;">
+                <button id="prev-step-btn" class="cta-button"
+                    style="background: var(--text-muted); display: none;">Back</button>
+                <button id="next-step-btn" class="cta-button" style="margin-left: auto;">Next <i
+                        class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
