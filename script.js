@@ -136,8 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
         saveCurrentAnswers();
 
         // Validate answers for current section
-        if (!validateSection(currentSectionIndex)) {
-            alert("Please answer all questions before proceeding.");
+        const missingQuestion = getMissingQuestion(currentSectionIndex);
+        if (missingQuestion) {
+            alert(`Please answer the question: "${missingQuestion}"`);
             return;
         }
 
@@ -150,15 +151,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function validateSection(index) {
+    function getMissingQuestion(index) {
         const section = questionnaireData[index];
         for (const item of section.items) {
-            // Check if answer exists
             if (!userAnswers[item.id] || (Array.isArray(userAnswers[item.id]) && userAnswers[item.id].length === 0)) {
-                return false;
+                return item.text;
             }
         }
-        return true;
+        return null;
+    }
+
+    function validateSection(index) {
+        return getMissingQuestion(index) === null;
     }
 
     function handlePrevStep() {
@@ -173,14 +177,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const section = questionnaireData[currentSectionIndex];
         section.items.forEach(item => {
             if (item.type === 'single_choice') {
-                const selected = document.querySelector(`input[name="${item.id}"]:checked`);
+                const selected = questionnaireContent.querySelector(`input[name="${item.id}"]:checked`);
                 if (selected) userAnswers[item.id] = selected.value;
             } else if (item.type === 'multiple_choice') {
-                const selected = document.querySelectorAll(`input[name="${item.id}"]:checked`);
-                userAnswers[item.id] = Array.from(selected).map(cb => cb.value);
+                const selected = questionnaireContent.querySelectorAll(`input[name="${item.id}"]:checked`);
+                if (selected.length > 0) {
+                    userAnswers[item.id] = Array.from(selected).map(cb => cb.value);
+                }
             } else if (item.type === 'text') {
-                const text = document.querySelector(`textarea[name="${item.id}"]`);
-                if (text) userAnswers[item.id] = text.value;
+                const text = questionnaireContent.querySelector(`textarea[name="${item.id}"]`);
+                if (text && text.value.trim() !== "") {
+                    userAnswers[item.id] = text.value.trim();
+                }
             }
         });
     }
@@ -229,12 +237,46 @@ document.addEventListener('DOMContentLoaded', () => {
             greeting += "I see that things have been feeling heavy lately. I'm here to support you through that. ";
         }
 
-        if (answers.coping_mechanisms && answers.coping_mechanisms.includes('Talking to a close friend or family member')) {
-            greeting += "It's great that you find comfort in talking to others. Think of me as another friend here to listen. ";
+        // Add customized tips
+        const tips = generateCustomizedTips(answers);
+        if (tips.length > 0) {
+            greeting += "\n\nHere are a few thoughts based on what you shared:\n";
+            tips.forEach(tip => {
+                greeting += `• ${tip}\n`;
+            });
         }
 
-        greeting += "How are you feeling right in this moment?";
+        greeting += "\nHow are you feeling right in this moment?";
         return greeting;
+    }
+
+    function generateCustomizedTips(answers) {
+        const tips = [];
+
+        // Iterate through all sections and items to find matching tips
+        questionnaireData.forEach(section => {
+            section.items.forEach(item => {
+                if (item.tips && answers[item.id]) {
+                    const userAnswer = answers[item.id];
+
+                    if (Array.isArray(userAnswer)) {
+                        // Handle multiple choice answers
+                        userAnswer.forEach(ans => {
+                            if (item.tips[ans]) {
+                                tips.push(item.tips[ans]);
+                            }
+                        });
+                    } else {
+                        // Handle single choice answers
+                        if (item.tips[userAnswer]) {
+                            tips.push(item.tips[userAnswer]);
+                        }
+                    }
+                }
+            });
+        });
+
+        return tips;
     }
 
     // Chat Functions

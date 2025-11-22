@@ -29,7 +29,10 @@ const questionnaireData = [
                 id: "life_heavy",
                 text: "Have you ever gone through a period when life felt heavy, and you didn’t enjoy things like before?",
                 type: "single_choice",
-                options: ["Yes", "No", "Prefer not to say"]
+                options: ["Yes", "No", "Prefer not to say"],
+                tips: {
+                    "Yes": "It takes courage to acknowledge when things feel heavy. Be gentle with yourself right now."
+                }
             },
             {
                 id: "comfortable_talking",
@@ -57,6 +60,15 @@ const questionnaireData = [
                     "Time alone / rest",
                     "Other"
                 ],
+                tips: {
+                    "Spending time outside in nature": "Since nature helps you, try to step outside for even 5 minutes today.",
+                    "Moving my body (walking, exercise, sports)": "Movement is great medicine. A short walk might help clear your mind.",
+                    "Spiritual practices (prayer, meditation, reflection)": "Taking time for spiritual connection can be very grounding.",
+                    "Doing something creative (music, art, writing)": "Expressing yourself through creativity can be very healing. Maybe spend some time on your art/writing today.",
+                    "Talking to a close friend or family member": "Connection is powerful. Don't hesitate to reach out to that friend you trust.",
+                    "Time alone / rest": "Rest is important. Make sure to take that quiet time you need to recharge.",
+                    "Professional support (therapist, counselor, doctor)": "It's strong of you to seek professional support. Keep leaning on that resource."
+                },
                 hasOpenOption: true
             },
             {
@@ -87,6 +99,13 @@ const questionnaireData = [
                     "Not believing depression is real",
                     "Other"
                 ],
+                tips: {
+                    "Fear of being judged by others": "Remember, seeking support is a sign of strength, not weakness. You are not alone in this.",
+                    "Not knowing where to go for help": "It can be confusing to find help. I can try to help guide you if you'd like.",
+                    "Worry about money or cost": "Financial worries are real, but there are often low-cost resources available.",
+                    "Feeling like they should “just handle it” alone": "We all need a hand sometimes. It's okay to let others support you.",
+                    "Not believing depression is real": "Your feelings are valid and real. Don't let anyone tell you otherwise."
+                },
                 hasOpenOption: true
             },
             {
