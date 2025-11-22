@@ -18,12 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isChatOpen = false;
     let currentSectionIndex = 0;
     let userAnswers = {};
-    let chatHistory = [];
-
-    // Gemini API Configuration
-    const GEMINI_API_KEY = 'AIzaSyBBiLaMkV_9L_pcWiVCDQlYuP524uScmE0';
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
-    const SYSTEM_INSTRUCTION = "You are a supportive, empathetic mental health assistant for students. Your goal is to listen, provide comfort, and offer gentle advice. Keep your responses concise (2-3 sentences) and conversational. Do not diagnose or prescribe.";
 
     // Event Listeners
     startChatBtn.addEventListener('click', startQuestionnaire);
@@ -200,25 +194,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Generate summary for AI
         const summary = formatAnswersForAI(userAnswers);
 
-        // Initialize chat history
-        chatHistory = [];
-
-        // Add context from questionnaire to history (hidden from user)
-        chatHistory.push({
-            role: "user",
-            parts: [{ text: `Here is the user's background information from the questionnaire: ${summary}. Please use this to personalize your support.` }]
-        });
-
         // Add initial AI message based on context
         setTimeout(() => {
             const initialResponse = generateInitialAIResponse(userAnswers);
             addMessage(initialResponse, 'ai');
-
-            // Record initial AI response in history
-            chatHistory.push({
-                role: "model",
-                parts: [{ text: initialResponse }]
-            });
         }, 500);
     }
 
@@ -293,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isChatOpen = false;
     }
 
-    async function handleSendMessage(e) {
+    function handleSendMessage(e) {
         e.preventDefault();
         const message = userInput.value.trim();
 
@@ -302,14 +281,13 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage(message, 'user');
             userInput.value = '';
 
-            // Show typing indicator
+            // Simulate AI thinking and response
             showTypingIndicator();
-
-            // Get AI response
-            const aiResponse = await callGeminiAPI(message);
-
-            removeTypingIndicator();
-            addMessage(aiResponse, 'ai');
+            setTimeout(() => {
+                removeTypingIndicator();
+                const aiResponse = getMockAIResponse(message);
+                addMessage(aiResponse, 'ai');
+            }, 1500);
         }
     }
 
@@ -357,47 +335,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Mock AI Logic (Simple keyword matching for now)
-    // Gemini API Logic
-    async function callGeminiAPI(userMessage) {
-        // Add user message to history
-        chatHistory.push({
-            role: "user",
-            parts: [{ text: userMessage }]
-        });
+    function getMockAIResponse(input) {
+        const lowerInput = input.toLowerCase();
 
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: chatHistory,
-                    system_instruction: {
-                        parts: [{ text: SYSTEM_INSTRUCTION }]
-                    }
-                })
-            });
-
-            const data = await response.json();
-
-            if (data.candidates && data.candidates[0].content) {
-                const aiText = data.candidates[0].content.parts[0].text;
-
-                // Add model response to history
-                chatHistory.push({
-                    role: "model",
-                    parts: [{ text: aiText }]
-                });
-
-                return aiText;
-            } else {
-                console.error('API Error:', data);
-                return "I'm having a little trouble connecting right now. Can we try again in a moment?";
-            }
-        } catch (error) {
-            console.error('Fetch Error:', error);
-            return "I'm having trouble connecting to the server. Please check your internet connection.";
+        if (lowerInput.includes('hello') || lowerInput.includes('hi')) {
+            return "Hi there! It's good to see you. How are you feeling right now?";
+        } else if (lowerInput.includes('sad') || lowerInput.includes('depressed') || lowerInput.includes('down')) {
+            return "I'm sorry to hear you're feeling that way. It takes courage to share that. Would you like to talk about what's making you feel this way?";
+        } else if (lowerInput.includes('stress') || lowerInput.includes('anxious') || lowerInput.includes('exam')) {
+            return "School can be incredibly stressful. Remember to take deep breaths. Have you taken any breaks today?";
+        } else if (lowerInput.includes('tired') || lowerInput.includes('sleep')) {
+            return "Rest is so important for your mind. Maybe it's time to disconnect for a bit and recharge?";
+        } else if (lowerInput.includes('thank')) {
+            return "You're very welcome. I'm always here if you need to chat.";
+        } else {
+            return "I hear you. Tell me more about that. I'm here to listen and support you.";
         }
     }
 });
