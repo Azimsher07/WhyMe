@@ -180,28 +180,44 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
-    function completeQuestionnaire() {
+    async function completeQuestionnaire() {
         closeQuestionnaire();
         openChat();
+        showTypingIndicator();
 
-        // Initial AI Message
-        setTimeout(() => {
-            const greeting = generateInitialGreeting(userAnswers);
-            addMessage(greeting, 'ai');
+        const profileText = `Here is the user's profile based on a questionnaire they just completed: ${JSON.stringify(userAnswers)}. Please provide a warm, empathetic, and personalized initial greeting based on this information. Keep it concise (2-3 sentences).`;
 
-            // Seed history
-            chatHistory = [
-                { role: "user", parts: [{ text: `User Profile: ${JSON.stringify(userAnswers)}` }] },
-                { role: "model", parts: [{ text: greeting }] }
-            ];
-        }, 500);
-    }
+        // Seed history with the profile context
+        chatHistory.push({ role: "user", parts: [{ text: profileText }] });
 
-    function generateInitialGreeting(answers) {
-        let msg = "Hello! I'm here to listen. ";
-        if (answers.life_heavy === 'Yes') msg += "I know things have been heavy lately. ";
-        msg += "How are you feeling right now?";
-        return msg;
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: chatHistory,
+                    system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }
+                })
+            });
+
+            const data = await response.json();
+            if (!data.candidates || !data.candidates[0].content) throw new Error("Invalid API response");
+
+            const aiText = data.candidates[0].content.parts[0].text;
+
+            // Add AI response to history
+            chatHistory.push({ role: "model", parts: [{ text: aiText }] });
+
+            removeTypingIndicator();
+            addMessage(aiText, 'ai');
+        } catch (err) {
+            removeTypingIndicator();
+            console.error("Initial greeting failed:", err);
+            // Fallback greeting
+            const fallback = "Hello. I'm here to listen. I know things might be tough, but I'm glad you're here. How are you feeling?";
+            addMessage(fallback, 'ai');
+            chatHistory.push({ role: "model", parts: [{ text: fallback }] });
+        }
     }
 
     // --- Chat Functions ---
