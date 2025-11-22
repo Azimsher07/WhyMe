@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
+    // --- Configuration ---
+    const GEMINI_API_KEY = 'AIzaSyBBiLaMkV_9L_pcWiVCDQlYuP524uScmE0';
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const SYSTEM_INSTRUCTION = "You are a supportive, empathetic mental health assistant for students. Your goal is to listen, provide comfort, and offer gentle advice. Keep your responses concise (2-3 sentences) and conversational. Do not diagnose or prescribe.";
+
+    // --- DOM Elements ---
     const startChatBtn = document.getElementById('start-chat-btn');
     const closeChatBtn = document.getElementById('close-chat-btn');
     const chatSection = document.getElementById('chat-section');
@@ -7,28 +12,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
     const chatMessages = document.getElementById('chat-messages');
 
-    // Questionnaire Elements
     const questionnaireSection = document.getElementById('questionnaire-section');
     const closeQuestionnaireBtn = document.getElementById('close-questionnaire-btn');
     const questionnaireContent = document.getElementById('questionnaire-content');
     const nextStepBtn = document.getElementById('next-step-btn');
     const prevStepBtn = document.getElementById('prev-step-btn');
 
-    // State
-    let isChatOpen = false;
+    // --- State ---
     let currentSectionIndex = 0;
     let userAnswers = {};
+    let chatHistory = [];
 
-    // Event Listeners
-    startChatBtn.addEventListener('click', startQuestionnaire);
-    closeChatBtn.addEventListener('click', closeChat);
-    closeQuestionnaireBtn.addEventListener('click', closeQuestionnaire);
-    chatForm.addEventListener('submit', handleSendMessage);
+    // --- Event Listeners ---
+    if (startChatBtn) startChatBtn.addEventListener('click', startQuestionnaire);
+    if (closeChatBtn) closeChatBtn.addEventListener('click', closeChat);
+    if (closeQuestionnaireBtn) closeQuestionnaireBtn.addEventListener('click', closeQuestionnaire);
+    if (chatForm) chatForm.addEventListener('submit', handleSendMessage);
+    if (nextStepBtn) nextStepBtn.addEventListener('click', handleNextStep);
+    if (prevStepBtn) prevStepBtn.addEventListener('click', handlePrevStep);
 
-    nextStepBtn.addEventListener('click', handleNextStep);
-    prevStepBtn.addEventListener('click', handlePrevStep);
+    // --- Questionnaire Functions ---
 
-    // Questionnaire Logic
     function startQuestionnaire() {
         questionnaireSection.classList.remove('hidden');
         currentSectionIndex = 0;
@@ -41,20 +45,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderSection(index) {
+        if (!questionnaireData || !questionnaireData[index]) {
+            console.error("Questionnaire data missing or index out of bounds");
+            return;
+        }
         const section = questionnaireData[index];
         questionnaireContent.innerHTML = '';
 
         // Progress Bar
         const progressContainer = document.createElement('div');
-        progressContainer.classList.add('progress-container');
+        progressContainer.className = 'progress-container';
         const progressBar = document.createElement('div');
-        progressBar.classList.add('progress-bar');
+        progressBar.className = 'progress-bar';
         const progress = ((index + 1) / questionnaireData.length) * 100;
         progressBar.style.width = `${progress}%`;
         progressContainer.appendChild(progressBar);
         questionnaireContent.appendChild(progressContainer);
 
-        // Section Title
+        // Title
         const title = document.createElement('h4');
         title.textContent = section.sectionTitle;
         title.style.color = 'var(--primary-dark)';
@@ -65,35 +73,35 @@ document.addEventListener('DOMContentLoaded', () => {
         title.style.letterSpacing = '0.05em';
         questionnaireContent.appendChild(title);
 
-        // Questions
+        // Items
         section.items.forEach(item => {
-            const questionBlock = document.createElement('div');
-            questionBlock.classList.add('question-block');
+            const block = document.createElement('div');
+            block.className = 'question-block';
 
-            const questionText = document.createElement('div');
-            questionText.classList.add('question-text');
-            questionText.textContent = item.text;
-            questionBlock.appendChild(questionText);
+            const text = document.createElement('div');
+            text.className = 'question-text';
+            text.textContent = item.text;
+            block.appendChild(text);
 
             if (item.type === 'single_choice' || item.type === 'multiple_choice') {
                 const optionsContainer = document.createElement('div');
-                optionsContainer.classList.add('options-container');
+                optionsContainer.className = 'options-container';
 
                 item.options.forEach(option => {
                     const label = document.createElement('label');
-                    label.classList.add('option-label');
+                    label.className = 'option-label';
 
                     const input = document.createElement('input');
                     input.type = item.type === 'single_choice' ? 'radio' : 'checkbox';
                     input.name = item.id;
                     input.value = option;
 
-                    // Restore previous answer if exists
+                    // Restore state
                     if (userAnswers[item.id]) {
                         if (Array.isArray(userAnswers[item.id])) {
                             if (userAnswers[item.id].includes(option)) input.checked = true;
-                        } else {
-                            if (userAnswers[item.id] === option) input.checked = true;
+                        } else if (userAnswers[item.id] === option) {
+                            input.checked = true;
                         }
                     }
 
@@ -101,38 +109,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     label.appendChild(document.createTextNode(option));
                     optionsContainer.appendChild(label);
                 });
-
-                if (item.hasOpenOption) {
-                    // Simple implementation for "Other" - just a text input that appears if selected
-                    // For now, let's just add it as a text area below if needed, or keep it simple
-                }
-
-                questionBlock.appendChild(optionsContainer);
+                block.appendChild(optionsContainer);
             } else if (item.type === 'text') {
                 const textarea = document.createElement('textarea');
-                textarea.classList.add('text-input');
+                textarea.className = 'text-input';
                 textarea.name = item.id;
                 textarea.placeholder = "Type your answer here...";
                 if (userAnswers[item.id]) textarea.value = userAnswers[item.id];
-                questionBlock.appendChild(textarea);
+                block.appendChild(textarea);
             }
-
-            questionnaireContent.appendChild(questionBlock);
+            questionnaireContent.appendChild(block);
         });
 
-        // Update Buttons
+        // Buttons
         prevStepBtn.style.display = index === 0 ? 'none' : 'block';
-        nextStepBtn.innerHTML = index === questionnaireData.length - 1 ? 'Start Chat <i class="fa-solid fa-check"></i>' : 'Next <i class="fa-solid fa-arrow-right"></i>';
+        nextStepBtn.innerHTML = index === questionnaireData.length - 1 ?
+            'Start Chat <i class="fa-solid fa-check"></i>' :
+            'Next <i class="fa-solid fa-arrow-right"></i>';
     }
 
     function handleNextStep() {
-        // Save current answers
         saveCurrentAnswers();
 
-        // Validate answers for current section
-        const missingQuestion = getMissingQuestion(currentSectionIndex);
-        if (missingQuestion) {
-            alert(`Please answer the question: "${missingQuestion}"`);
+        const missing = getMissingQuestion(currentSectionIndex);
+        if (missing) {
+            alert(`Please answer: "${missing}"`);
             return;
         }
 
@@ -140,23 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
             currentSectionIndex++;
             renderSection(currentSectionIndex);
         } else {
-            // Submit and Start Chat
             completeQuestionnaire();
         }
-    }
-
-    function getMissingQuestion(index) {
-        const section = questionnaireData[index];
-        for (const item of section.items) {
-            if (!userAnswers[item.id] || (Array.isArray(userAnswers[item.id]) && userAnswers[item.id].length === 0)) {
-                return item.text;
-            }
-        }
-        return null;
-    }
-
-    function validateSection(index) {
-        return getMissingQuestion(index) === null;
     }
 
     function handlePrevStep() {
@@ -171,185 +157,134 @@ document.addEventListener('DOMContentLoaded', () => {
         const section = questionnaireData[currentSectionIndex];
         section.items.forEach(item => {
             if (item.type === 'single_choice') {
-                const selected = questionnaireContent.querySelector(`input[name="${item.id}"]:checked`);
-                if (selected) userAnswers[item.id] = selected.value;
+                const el = questionnaireContent.querySelector(`input[name="${item.id}"]:checked`);
+                if (el) userAnswers[item.id] = el.value;
             } else if (item.type === 'multiple_choice') {
-                const selected = questionnaireContent.querySelectorAll(`input[name="${item.id}"]:checked`);
-                if (selected.length > 0) {
-                    userAnswers[item.id] = Array.from(selected).map(cb => cb.value);
-                }
+                const els = questionnaireContent.querySelectorAll(`input[name="${item.id}"]:checked`);
+                if (els.length > 0) userAnswers[item.id] = Array.from(els).map(e => e.value);
             } else if (item.type === 'text') {
-                const text = questionnaireContent.querySelector(`textarea[name="${item.id}"]`);
-                if (text && text.value.trim() !== "") {
-                    userAnswers[item.id] = text.value.trim();
-                }
+                const el = questionnaireContent.querySelector(`textarea[name="${item.id}"]`);
+                if (el && el.value.trim()) userAnswers[item.id] = el.value.trim();
             }
         });
+    }
+
+    function getMissingQuestion(index) {
+        const section = questionnaireData[index];
+        for (const item of section.items) {
+            const ans = userAnswers[item.id];
+            if (!ans || (Array.isArray(ans) && ans.length === 0)) {
+                return item.text;
+            }
+        }
+        return null;
     }
 
     function completeQuestionnaire() {
         closeQuestionnaire();
         openChat();
 
-        // Generate summary for AI
-        const summary = formatAnswersForAI(userAnswers);
-
-        // Add initial AI message based on context
+        // Initial AI Message
         setTimeout(() => {
-            const initialResponse = generateInitialAIResponse(userAnswers);
-            addMessage(initialResponse, 'ai');
+            const greeting = generateInitialGreeting(userAnswers);
+            addMessage(greeting, 'ai');
+
+            // Seed history
+            chatHistory = [
+                { role: "user", parts: [{ text: `User Profile: ${JSON.stringify(userAnswers)}` }] },
+                { role: "model", parts: [{ text: greeting }] }
+            ];
         }, 500);
     }
 
-    function formatAnswersForAI(answers) {
-        // In a real app, this would be sent to the backend
-        console.log("User Answers:", answers);
-        return JSON.stringify(answers);
+    function generateInitialGreeting(answers) {
+        let msg = "Hello! I'm here to listen. ";
+        if (answers.life_heavy === 'Yes') msg += "I know things have been heavy lately. ";
+        msg += "How are you feeling right now?";
+        return msg;
     }
 
-    function generateInitialAIResponse(answers) {
-        // Simple personalization based on answers
-        const name = "friend"; // We didn't ask for name, but could
-        let greeting = "Hello! I've reviewed your answers. ";
+    // --- Chat Functions ---
 
-        if (answers.life_heavy === 'Yes') {
-            greeting += "I see that things have been feeling heavy lately. I'm here to support you through that. ";
-        }
-
-        // Add customized tips
-        const tips = generateCustomizedTips(answers);
-        if (tips.length > 0) {
-            greeting += "\n\nHere are a few thoughts based on what you shared:\n";
-            tips.forEach(tip => {
-                greeting += `• ${tip}\n`;
-            });
-        }
-
-        greeting += "\nHow are you feeling right in this moment?";
-        return greeting;
-    }
-
-    function generateCustomizedTips(answers) {
-        const tips = [];
-
-        // Iterate through all sections and items to find matching tips
-        questionnaireData.forEach(section => {
-            section.items.forEach(item => {
-                if (item.tips && answers[item.id]) {
-                    const userAnswer = answers[item.id];
-
-                    if (Array.isArray(userAnswer)) {
-                        // Handle multiple choice answers
-                        userAnswer.forEach(ans => {
-                            if (item.tips[ans]) {
-                                tips.push(item.tips[ans]);
-                            }
-                        });
-                    } else {
-                        // Handle single choice answers
-                        if (item.tips[userAnswer]) {
-                            tips.push(item.tips[userAnswer]);
-                        }
-                    }
-                }
-            });
-        });
-
-        return tips;
-    }
-
-    // Chat Functions
     function openChat() {
         chatSection.classList.remove('hidden');
-        isChatOpen = true;
         userInput.focus();
-        // Clear previous messages if any (optional, or keep history)
-        chatMessages.innerHTML = '';
     }
 
     function closeChat() {
         chatSection.classList.add('hidden');
-        isChatOpen = false;
     }
 
-    function handleSendMessage(e) {
+    async function handleSendMessage(e) {
         e.preventDefault();
-        const message = userInput.value.trim();
+        const text = userInput.value.trim();
+        if (!text) return;
 
-        if (message) {
-            // Add user message
-            addMessage(message, 'user');
-            userInput.value = '';
+        addMessage(text, 'user');
+        userInput.value = '';
+        showTypingIndicator();
 
-            // Simulate AI thinking and response
-            showTypingIndicator();
-            setTimeout(() => {
-                removeTypingIndicator();
-                const aiResponse = getMockAIResponse(message);
-                addMessage(aiResponse, 'ai');
-            }, 1500);
+        try {
+            const response = await callGeminiAPI(text);
+            removeTypingIndicator();
+            addMessage(response, 'ai');
+        } catch (err) {
+            removeTypingIndicator();
+            addMessage("I'm having trouble connecting. Please try again.", 'ai');
+            console.error(err);
         }
+    }
+
+    async function callGeminiAPI(text) {
+        chatHistory.push({ role: "user", parts: [{ text: text }] });
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: chatHistory,
+                system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }
+            })
+        });
+
+        const data = await response.json();
+        if (!data.candidates || !data.candidates[0].content) throw new Error("Invalid API response");
+
+        const aiText = data.candidates[0].content.parts[0].text;
+        chatHistory.push({ role: "model", parts: [{ text: aiText }] });
+        return aiText;
     }
 
     function addMessage(text, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', `${sender}-message`);
+        const div = document.createElement('div');
+        div.className = `message ${sender}-message`;
 
         const contentDiv = document.createElement('div');
-        contentDiv.classList.add('message-content');
+        contentDiv.className = 'message-content';
         contentDiv.textContent = text;
 
         const timeDiv = document.createElement('div');
-        timeDiv.classList.add('message-time');
+        timeDiv.className = 'message-time';
         timeDiv.textContent = 'Just now';
 
-        messageDiv.appendChild(contentDiv);
-        messageDiv.appendChild(timeDiv);
+        div.appendChild(contentDiv);
+        div.appendChild(timeDiv);
 
-        chatMessages.appendChild(messageDiv);
-        scrollToBottom();
-    }
-
-    function showTypingIndicator() {
-        const indicatorDiv = document.createElement('div');
-        indicatorDiv.id = 'typing-indicator';
-        indicatorDiv.classList.add('message', 'ai-message');
-        indicatorDiv.innerHTML = `
-            <div class="message-content" style="padding: 0.5rem 1rem;">
-                <i class="fa-solid fa-ellipsis fa-fade"></i>
-            </div>
-        `;
-        chatMessages.appendChild(indicatorDiv);
-        scrollToBottom();
-    }
-
-    function removeTypingIndicator() {
-        const indicator = document.getElementById('typing-indicator');
-        if (indicator) {
-            indicator.remove();
-        }
-    }
-
-    function scrollToBottom() {
+        chatMessages.appendChild(div);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Mock AI Logic (Simple keyword matching for now)
-    function getMockAIResponse(input) {
-        const lowerInput = input.toLowerCase();
+    function showTypingIndicator() {
+        const div = document.createElement('div');
+        div.id = 'typing-indicator';
+        div.className = 'message ai-message';
+        div.innerHTML = '<div class="message-content" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-ellipsis fa-fade"></i></div>';
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
 
-        if (lowerInput.includes('hello') || lowerInput.includes('hi')) {
-            return "Hi there! It's good to see you. How are you feeling right now?";
-        } else if (lowerInput.includes('sad') || lowerInput.includes('depressed') || lowerInput.includes('down')) {
-            return "I'm sorry to hear you're feeling that way. It takes courage to share that. Would you like to talk about what's making you feel this way?";
-        } else if (lowerInput.includes('stress') || lowerInput.includes('anxious') || lowerInput.includes('exam')) {
-            return "School can be incredibly stressful. Remember to take deep breaths. Have you taken any breaks today?";
-        } else if (lowerInput.includes('tired') || lowerInput.includes('sleep')) {
-            return "Rest is so important for your mind. Maybe it's time to disconnect for a bit and recharge?";
-        } else if (lowerInput.includes('thank')) {
-            return "You're very welcome. I'm always here if you need to chat.";
-        } else {
-            return "I hear you. Tell me more about that. I'm here to listen and support you.";
-        }
+    function removeTypingIndicator() {
+        const el = document.getElementById('typing-indicator');
+        if (el) el.remove();
     }
 });
