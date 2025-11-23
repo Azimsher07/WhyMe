@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- Configuration ---
-    const GEMINI_API_KEY = 'AIzaSyBBiLaMkV_9L_pcWiVCDQlYuP524uScmE0';
+    // const GEMINI_API_KEY = 'AIzaSyBBiLaMkV_9L_pcWiVCDQlYuP524uScmE0';
+    const GEMINI_API_KEY = 'AIzaSyBVuXIsItN8q75AmiNN1TnasQE63octh0s';
     const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
     const SYSTEM_INSTRUCTION = "You are a supportive, empathetic mental health assistant for students. Your goal is to listen, provide comfort, and offer gentle advice. Keep your responses concise (2-3 sentences) and conversational. Do not diagnose or prescribe.";
 
