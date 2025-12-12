@@ -1,12 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Configuration ---
+
     const GEMINI_API_KEY = 'GEMINI API KEY';
     const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-    // TODO: User needs to replace this with their deployed Web App URL
-    // TODO: Follow the instructions in google_sheets_guide.md to get your URL
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYGt6Ne6fKNO2GXkoQdOoMigSDR1lGnSUkRdcxr6d88rOPmFi4Rd1qQPufVuPTePc1/exec';
 
     let currentLanguage = 'en';
