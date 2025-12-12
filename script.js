@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Configuration ---
-    const GEMINI_API_KEY = 'AIzaSyAfBRNy8ushkwHv04RUW8VqZDbdVMHXX8U';
+    const GEMINI_API_KEY = 'GEMINI API KEY';
     const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
     // TODO: User needs to replace this with their deployed Web App URL
