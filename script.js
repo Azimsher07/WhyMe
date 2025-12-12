@@ -1,9 +1,21 @@
+import { GoogleGenAI } from "@google/genai";
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Configuration ---
-    // const GEMINI_API_KEY = 'AIzaSyBBiLaMkV_9L_pcWiVCDQlYuP524uScmE0';
-    const GEMINI_API_KEY = 'AIzaSyBVuXIsItN8q75AmiNN1TnasQE63octh0s';
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
-    const SYSTEM_INSTRUCTION = "You are a supportive, empathetic mental health assistant for students. Your goal is to listen, provide comfort, and offer gentle advice. Keep your responses concise (2-3 sentences) and conversational. Do not diagnose or prescribe.";
+    const GEMINI_API_KEY = 'AIzaSyAfBRNy8ushkwHv04RUW8VqZDbdVMHXX8U';
+    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+    // TODO: User needs to replace this with their deployed Web App URL
+    // TODO: Follow the instructions in google_sheets_guide.md to get your URL
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYGt6Ne6fKNO2GXkoQdOoMigSDR1lGnSUkRdcxr6d88rOPmFi4Rd1qQPufVuPTePc1/exec';
+
+    let currentLanguage = 'en';
+
+    const SYSTEM_INSTRUCTIONS = {
+        "en": "You are a supportive, empathetic mental health assistant for students. Your goal is to listen, provide comfort, and offer gentle advice. Keep your responses concise (2-3 sentences) and conversational. Do not diagnose or prescribe.",
+        "ru": "Вы — поддерживающий, эмпатичный помощник по психическому здоровью для студентов. Ваша цель — выслушать, утешить и дать мягкий совет. Отвечайте кратко (2-3 предложения) и в разговорном стиле. Не ставьте диагнозы и не назначайте лечение.",
+        "uz": "Siz talabalar uchun hamdard ruhiy salomatlik yordamchisisiz. Maqsadingiz tinglash, tasalli berish va yumshoq maslahatlar berishdir. Javoblaringizni qisqa (2-3 gap) va samimiy tuting. Tashxis qo'ymang yoki davolash buyurmang."
+    };
 
     // --- DOM Elements ---
     const startChatBtn = document.getElementById('start-chat-btn');
@@ -19,6 +31,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextStepBtn = document.getElementById('next-step-btn');
     const prevStepBtn = document.getElementById('prev-step-btn');
 
+    const langBtns = document.querySelectorAll('.lang-btn');
+    const burgerMenuBtn = document.getElementById('burger-menu');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (burgerMenuBtn) {
+        burgerMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            const icon = burgerMenuBtn.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            }
+        });
+    }
+
     // --- State ---
     let currentSectionIndex = 0;
     let userAnswers = {};
@@ -31,6 +61,44 @@ document.addEventListener('DOMContentLoaded', () => {
     if (chatForm) chatForm.addEventListener('submit', handleSendMessage);
     if (nextStepBtn) nextStepBtn.addEventListener('click', handleNextStep);
     if (prevStepBtn) prevStepBtn.addEventListener('click', handlePrevStep);
+
+    langBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const lang = e.target.getAttribute('data-lang');
+            setLanguage(lang);
+        });
+    });
+
+    // --- Language Functions ---
+    function setLanguage(lang) {
+        currentLanguage = lang;
+
+        // Update Buttons State
+        langBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+        });
+
+        // Update Text Content
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang] && translations[lang][key]) {
+                el.textContent = translations[lang][key];
+            }
+        });
+
+        // Update Placeholders
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translations[lang] && translations[lang][key]) {
+                el.placeholder = translations[lang][key];
+            }
+        });
+
+        // Re-render questionnaire if open
+        if (!questionnaireSection.classList.contains('hidden')) {
+            renderSection(currentSectionIndex);
+        }
+    }
 
     // --- Questionnaire Functions ---
 
@@ -46,11 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderSection(index) {
-        if (!questionnaireData || !questionnaireData[index]) {
+        const data = questionnaireData[currentLanguage];
+        if (!data || !data[index]) {
             console.error("Questionnaire data missing or index out of bounds");
             return;
         }
-        const section = questionnaireData[index];
+        const section = data[index];
         questionnaireContent.innerHTML = '';
 
         // Progress Bar
@@ -58,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         progressContainer.className = 'progress-container';
         const progressBar = document.createElement('div');
         progressBar.className = 'progress-bar';
-        const progress = ((index + 1) / questionnaireData.length) * 100;
+        const progress = ((index + 1) / data.length) * 100;
         progressBar.style.width = `${progress}%`;
         progressContainer.appendChild(progressBar);
         questionnaireContent.appendChild(progressContainer);
@@ -115,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const textarea = document.createElement('textarea');
                 textarea.className = 'text-input';
                 textarea.name = item.id;
-                textarea.placeholder = "Type your answer here...";
+                textarea.placeholder = translations[currentLanguage]['input_placeholder'] || "Type here...";
                 if (userAnswers[item.id]) textarea.value = userAnswers[item.id];
                 block.appendChild(textarea);
             }
@@ -124,9 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Buttons
         prevStepBtn.style.display = index === 0 ? 'none' : 'block';
-        nextStepBtn.innerHTML = index === questionnaireData.length - 1 ?
-            'Start Chat <i class="fa-solid fa-check"></i>' :
-            'Next <i class="fa-solid fa-arrow-right"></i>';
+
+        const isLast = index === data.length - 1;
+        const btnText = isLast ? translations[currentLanguage]['btn_submit'] : translations[currentLanguage]['btn_next'];
+        const icon = isLast ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-arrow-right"></i>';
+
+        nextStepBtn.innerHTML = `${btnText} ${icon}`;
     }
 
     function handleNextStep() {
@@ -134,11 +206,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const missing = getMissingQuestion(currentSectionIndex);
         if (missing) {
-            alert(`Please answer: "${missing}"`);
+            alert(`${translations[currentLanguage]['alert_missing']} "${missing}"`);
             return;
         }
 
-        if (currentSectionIndex < questionnaireData.length - 1) {
+        const data = questionnaireData[currentLanguage];
+        if (currentSectionIndex < data.length - 1) {
             currentSectionIndex++;
             renderSection(currentSectionIndex);
         } else {
@@ -155,7 +228,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveCurrentAnswers() {
-        const section = questionnaireData[currentSectionIndex];
+        const data = questionnaireData[currentLanguage];
+        const section = data[currentSectionIndex];
         section.items.forEach(item => {
             if (item.type === 'single_choice') {
                 const el = questionnaireContent.querySelector(`input[name="${item.id}"]:checked`);
@@ -171,7 +245,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getMissingQuestion(index) {
-        const section = questionnaireData[index];
+        const data = questionnaireData[currentLanguage];
+        const section = data[index];
         for (const item of section.items) {
             const ans = userAnswers[item.id];
             if (!ans || (Array.isArray(ans) && ans.length === 0)) {
@@ -186,25 +261,25 @@ document.addEventListener('DOMContentLoaded', () => {
         openChat();
         showTypingIndicator();
 
-        const profileText = `Here is the user's profile based on a questionnaire they just completed: ${JSON.stringify(userAnswers)}. Please provide a warm, empathetic, and personalized initial greeting based on this information. Keep it concise (2-3 sentences).`;
+        // 1. Submit to Google Sheets (Fire and Forget)
+        submitToGoogleSheets(userAnswers);
 
-        // Seed history with the profile context
+        // 2. Prepare AI Context
+        const profileText = `User Language: ${currentLanguage}. Profile: ${JSON.stringify(userAnswers)}. Please provide a warm, empathetic, and personalized initial greeting in ${currentLanguage}.`;
+
+        // Seed history
         chatHistory.push({ role: "user", parts: [{ text: profileText }] });
 
         try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: chatHistory,
-                    system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }
-                })
+            const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: chatHistory,
+                config: {
+                    systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTIONS[currentLanguage] }] }
+                }
             });
 
-            const data = await response.json();
-            if (!data.candidates || !data.candidates[0].content) throw new Error("Invalid API response");
-
-            const aiText = data.candidates[0].content.parts[0].text;
+            const aiText = response.text;
 
             // Add AI response to history
             chatHistory.push({ role: "model", parts: [{ text: aiText }] });
@@ -214,11 +289,36 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             removeTypingIndicator();
             console.error("Initial greeting failed:", err);
-            // Fallback greeting
-            const fallback = "Hello. I'm here to listen. I know things might be tough, but I'm glad you're here. How are you feeling?";
+            const fallback = translations[currentLanguage]['ai_fallback_greeting'];
             addMessage(fallback, 'ai');
             chatHistory.push({ role: "model", parts: [{ text: fallback }] });
         }
+    }
+
+    function submitToGoogleSheets(data) {
+        if (GOOGLE_SCRIPT_URL === 'PASTE_YOUR_WEB_APP_URL_HERE' || GOOGLE_SCRIPT_URL.includes('YOUR_GOOGLE_SCRIPT_URL_HERE')) {
+            console.warn("Google Script URL not set. Data not saved. Please follow the guide to set it up.");
+            return;
+        }
+
+        const payload = {
+            language: currentLanguage,
+            ...data
+        };
+
+        // Use no-cors mode to avoid CORS errors from Google Scripts
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'text/plain', // text/plain is often better for Apps Script simple triggers
+            },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            console.log("Data submitted to Google Sheets");
+        }).catch(err => {
+            console.error("Failed to submit data:", err);
+        });
     }
 
     // --- Chat Functions ---
@@ -247,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage(response, 'ai');
         } catch (err) {
             removeTypingIndicator();
-            addMessage("I'm having trouble connecting. Please try again.", 'ai');
+            addMessage(translations[currentLanguage]['ai_connection_error'], 'ai');
             console.error(err);
         }
     }
@@ -255,19 +355,15 @@ document.addEventListener('DOMContentLoaded', () => {
     async function callGeminiAPI(text) {
         chatHistory.push({ role: "user", parts: [{ text: text }] });
 
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: chatHistory,
-                system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }
-            })
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: chatHistory,
+            config: {
+                systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTIONS[currentLanguage] }] }
+            }
         });
 
-        const data = await response.json();
-        if (!data.candidates || !data.candidates[0].content) throw new Error("Invalid API response");
-
-        const aiText = data.candidates[0].content.parts[0].text;
+        const aiText = response.text;
         chatHistory.push({ role: "model", parts: [{ text: aiText }] });
         return aiText;
     }

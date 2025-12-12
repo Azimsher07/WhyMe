@@ -21,12 +21,21 @@
             <div class="logo gradient-text">
                 <i class="fa-solid fa-leaf"></i> WhyMe
             </div>
+            <button class="burger-menu" id="burger-menu"><i class="fa-solid fa-bars"></i></button>
             <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="resources.html">Resources</a>
-                <a href="about.html" class="active">About</a>
+                <a href="index.html" data-i18n="nav_home">Home</a>
+                <a href="resources.html" data-i18n="nav_resources">Resources</a>
+                <a href="about.html" class="active" data-i18n="nav_about">About</a>
+
+                <!-- Language Switcher -->
+                <div class="lang-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                    <button class="lang-btn" data-lang="uz">UZ</button>
+                </div>
+
                 <button class="quick-exit-btn" onclick="window.location.href='https://www.google.com'">
-                    Quick Exit <i class="fa-solid fa-person-running"></i>
+                    <span data-i18n="nav_quick_exit">Quick Exit</span> <i class="fa-solid fa-person-running"></i>
                 </button>
             </div>
         </nav>
@@ -34,73 +43,105 @@
         <!-- About Section -->
         <section id="about-section" class="content-section">
             <div class="section-header">
-                <h2>About <span class="gradient-text">WhyMe</span></h2>
-                <p>Our mission and promise to you.</p>
+                <h2><span data-i18n="about_title">About</span> <span class="gradient-text">WhyMe</span></h2>
+                <p data-i18n="about_subtitle">Our mission and promise to you.</p>
             </div>
 
             <div class="about-content">
                 <div class="about-block">
-                    <h3><i class="fa-solid fa-bullseye"></i> Our Mission</h3>
-                    <p>To provide a safe, judgment-free space for students to find clarity and support. We believe no
+                    <h3><i class="fa-solid fa-bullseye"></i> <span data-i18n="mission_title">Our Mission</span></h3>
+                    <p data-i18n="mission_text_1">To provide a safe, judgment-free space for students to find clarity
+                        and support. We believe no
                         student should have to carry the weight of the world alone. Mental health challenges are real,
                         valid, and far more common than many realize.</p>
-                    <p>WhyMe was created to bridge the gap between struggling in silence and seeking professional help.
+                    <p data-i18n="mission_text_2">WhyMe was created to bridge the gap between struggling in silence and
+                        seeking professional help.
                         We offer a compassionate first step—a place to talk, be heard, and feel understood.</p>
                 </div>
 
                 <div class="about-block">
-                    <h3><i class="fa-solid fa-robot"></i> How it Works</h3>
-                    <p>WhyMe uses an empathetic AI companion powered by advanced natural language processing to listen
+                    <h3><i class="fa-solid fa-robot"></i> <span data-i18n="how_it_works_title">How it Works</span></h3>
+                    <p data-i18n="how_it_works_text_1">WhyMe uses an empathetic AI companion powered by advanced natural
+                        language processing to listen
                         and offer support. It is designed to be a comforting presence when you need to vent or seek
                         advice.</p>
-                    <p>Before you start chatting, you'll complete a brief questionnaire that helps the AI understand
+                    <p data-i18n="how_it_works_text_2">Before you start chatting, you'll complete a brief questionnaire
+                        that helps the AI understand
                         your current situation and provide personalized responses.</p>
 
                     <div class="alert-box warning">
                         <i class="fa-solid fa-triangle-exclamation"></i>
                         <div>
-                            <strong>Important Disclaimer:</strong> WhyMe is an AI companion, not a replacement for
-                            professional therapy or medical advice. If you're experiencing a mental health crisis,
-                            please reach out to a qualified professional or call a crisis hotline immediately.
+                            <strong data-i18n="disclaimer_title">Important Disclaimer:</strong> <span
+                                data-i18n="disclaimer_text">WhyMe is an AI companion, not a replacement for
+                                professional therapy or medical advice. If you're experiencing a mental health crisis,
+                                please reach out to a qualified professional or call a crisis hotline
+                                immediately.</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="about-block">
-                    <h3><i class="fa-solid fa-user-shield"></i> Privacy & Data</h3>
-                    <p>Your privacy is our top priority. Here's what you need to know:</p>
+                    <h3><i class="fa-solid fa-user-shield"></i> <span data-i18n="privacy_title">Privacy & Data</span>
+                    </h3>
+                    <p data-i18n="privacy_text">Your privacy is our top priority. Here's what you need to know:</p>
                     <ul class="privacy-list">
-                        <li><i class="fa-solid fa-check"></i> <strong>Anonymous Storage:</strong> Chats are stored
-                            anonymously for quality improvement purposes.</li>
-                        <li><i class="fa-solid fa-check"></i> <strong>No Personal Identifiers:</strong> No personal
-                            information (like your name, email, or IP address) is linked to your conversations.</li>
-                        <li><i class="fa-solid fa-check"></i> <strong>Nobody Knows Who You Are:</strong> Your identity
-                            remains completely confidential.</li>
-                        <li><i class="fa-solid fa-check"></i> <strong>Quality Improvement:</strong> Anonymized data may
-                            be reviewed by our team to improve the AI's responses and better serve students like you.
+                        <li>
+                            <div><i class="fa-solid fa-check"></i> <strong data-i18n="privacy_item_1_title">Anonymous
+                                    Storage:</strong></div> <span data-i18n="privacy_item_1_text">Chats are stored
+                                anonymously for quality improvement purposes.</span>
+                        </li>
+                        <li>
+                            <div><i class="fa-solid fa-check"></i> <strong data-i18n="privacy_item_2_title">No Personal
+                                    Identifiers:</strong></div> <span data-i18n="privacy_item_2_text">No personal
+                                information (like your name, email, or IP address) is linked to your
+                                conversations.</span>
+                        </li>
+                        <li>
+                            <div><i class="fa-solid fa-check"></i> <strong data-i18n="privacy_item_3_title">Nobody Knows
+                                    Who
+                                    You Are:</strong></div> <span data-i18n="privacy_item_3_text">Your identity
+                                remains completely confidential.</span>
+                        </li>
+                        <li>
+                            <div><i class="fa-solid fa-check"></i> <strong data-i18n="privacy_item_4_title">Quality
+                                    Improvement:</strong></div> <span data-i18n="privacy_item_4_text">Anonymized data
+                                may
+                                be reviewed by our team to improve the AI's responses and better serve students like
+                                you.</span>
                         </li>
                     </ul>
                 </div>
 
                 <div class="about-block">
-                    <h3><i class="fa-solid fa-heart"></i> Why We Built This</h3>
-                    <p>Mental health challenges among students are at an all-time high. Many suffer in silence due to
+                    <h3><i class="fa-solid fa-heart"></i> <span data-i18n="why_built_title">Why We Built This</span>
+                    </h3>
+                    <p data-i18n="why_built_text_1">Mental health challenges among students are at an all-time high.
+                        Many suffer in silence due to
                         stigma, lack of resources, or not knowing where to turn. We built WhyMe to provide an
                         accessible, immediate, and non-judgmental space for students to express themselves.</p>
-                    <p>While WhyMe isn't a substitute for professional care, it can be a valuable first step in your
+                    <p data-i18n="why_built_text_2">While WhyMe isn't a substitute for professional care, it can be a
+                        valuable first step in your
                         mental health journey—helping you process your thoughts and pointing you toward additional
                         resources when needed.</p>
                 </div>
 
                 <div class="about-block">
-                    <h3><i class="fa-solid fa-envelope"></i> Contact & Feedback</h3>
-                    <p>We're constantly working to improve WhyMe. If you have feedback, suggestions, or questions, we'd
+                    <h3><i class="fa-solid fa-envelope"></i> <span data-i18n="contact_title">Contact & Feedback</span>
+                    </h3>
+                    <p data-i18n="contact_text_1">We're constantly working to improve WhyMe. If you have feedback,
+                        suggestions, or questions, we'd
                         love to hear from you.</p>
-                    <p>Your voice matters in making WhyMe better for everyone.</p>
+                    <span id="email">flames1nger7@gmail.com</span>
+                    <p data-i18n="contact_text_2">Your voice matters in making WhyMe better for everyone.</p>
                 </div>
             </div>
         </section>
     </div>
+    <script src="translations.js"></script>
+    <script src="script.js"></script>
+
+
 </body>
 
 </html>

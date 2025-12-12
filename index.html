@@ -21,12 +21,21 @@
             <div class="logo gradient-text">
                 <i class="fa-solid fa-leaf"></i> WhyMe
             </div>
+            <button class="burger-menu" id="burger-menu"><i class="fa-solid fa-bars"></i></button>
             <div class="nav-links">
-                <a href="index.html" class="active">Home</a>
-                <a href="resources.html">Resources</a>
-                <a href="about.html">About</a>
+                <a href="index.html" class="active" data-i18n="nav_home">Home</a>
+                <a href="resources.html" data-i18n="nav_resources">Resources</a>
+                <a href="about.html" data-i18n="nav_about">About</a>
+
+                <!-- Language Switcher -->
+                <div class="lang-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                    <button class="lang-btn" data-lang="uz">UZ</button>
+                </div>
+
                 <button class="quick-exit-btn" onclick="window.location.href='https://www.google.com'">
-                    Quick Exit <i class="fa-solid fa-person-running"></i>
+                    <span data-i18n="nav_quick_exit">Quick Exit</span> <i class="fa-solid fa-person-running"></i>
                 </button>
             </div>
         </nav>
@@ -34,22 +43,24 @@
         <!-- Home Section -->
         <section id="home-section" class="hero-section">
             <div class="hero-content">
-                <div class="badge">AI-Powered Support</div>
-                <h1>Your Safe Space for <br><span class="gradient-text">Mental Clarity</span></h1>
-                <p>Feeling overwhelmed? Talk to our empathetic AI companion designed specifically for students. No
+                <div class="badge" data-i18n="hero_badge">AI-Powered Support</div>
+                <h1><span data-i18n="hero_title_1">Your Safe Space for</span> <br><span class="gradient-text"
+                        data-i18n="hero_title_2">Mental Clarity</span></h1>
+                <p data-i18n="hero_subtitle">Feeling overwhelmed? Talk to our empathetic AI companion designed
+                    specifically for students. No
                     judgment, just support.</p>
                 <button id="start-chat-btn" class="cta-button">
-                    Start Conversation <i class="fa-solid fa-arrow-right"></i>
+                    <span data-i18n="btn_start_chat">Start Conversation</span> <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
             <div class="hero-visual">
                 <div class="floating-card card-1">
                     <i class="fa-solid fa-heart-pulse"></i>
-                    <span>Stress Relief</span>
+                    <span data-i18n="card_stress">Stress Relief</span>
                 </div>
                 <div class="floating-card card-2">
                     <i class="fa-solid fa-brain"></i>
-                    <span>Mindfulness</span>
+                    <span data-i18n="card_mindfulness">Mindfulness</span>
                 </div>
                 <div class="glow-circle"></div>
             </div>
@@ -65,8 +76,8 @@
                         <i class="fa-solid fa-robot"></i>
                     </div>
                     <div class="status-info">
-                        <h3>WhyMe AI</h3>
-                        <span class="status-info">Online</span>
+                        <!-- <h3>WhyMe AI</h3> -->
+                        <span class="status-info" data-i18n="ai_status">Online</span>
                     </div>
                 </div>
                 <button id="close-chat-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
@@ -78,7 +89,8 @@
 
             <div class="chat-input-area">
                 <form id="chat-form">
-                    <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
+                    <input type="text" id="user-input" data-i18n-placeholder="input_placeholder"
+                        placeholder="Type your message..." autocomplete="off">
                     <button type="submit" id="send-btn">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
@@ -96,28 +108,37 @@
                         <i class="fa-solid fa-clipboard-question"></i>
                     </div>
                     <div class="status-info">
-                        <h3>Tell us about yourself</h3>
-                        <span class="status-info">This helps us support you better</span>
+                        <h3 data-i18n="questionnaire_title">Tell us about yourself</h3>
+                        <span class="status-info" data-i18n="questionnaire_subtitle">This helps us support you
+                            better</span>
                     </div>
                 </div>
                 <button id="close-questionnaire-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
             <div id="questionnaire-content" class="chat-messages">
-                <!-- Questions will be injected here -->
+                <!-- Questions will be rendered here -->
             </div>
 
             <div class="chat-input-area" style="justify-content: space-between; display: flex;">
-                <button id="prev-step-btn" class="cta-button"
-                    style="background: var(--text-muted); display: none;">Back</button>
-                <button id="next-step-btn" class="cta-button" style="margin-left: auto;">Next <i
-                        class="fa-solid fa-arrow-right"></i></button>
+                <button id="prev-step-btn" class="cta-button" style="background: var(--text-muted); display: none;"
+                    data-i18n="btn_back">Back</button>
+                <button id="next-step-btn" class="cta-button" style="margin-left: auto;"><span
+                        data-i18n="btn_next">Next</span> <i class="fa-solid fa-arrow-right"></i></button>
             </div>
         </div>
     </section>
 
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.run/@google/genai"
+        }
+      }
+    </script>
+    <script src="translations.js"></script>
     <script src="questions.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>

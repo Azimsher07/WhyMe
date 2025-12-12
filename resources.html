@@ -21,12 +21,21 @@
             <div class="logo gradient-text">
                 <i class="fa-solid fa-leaf"></i> WhyMe
             </div>
+            <button class="burger-menu" id="burger-menu"><i class="fa-solid fa-bars"></i></button>
             <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="resources.html" class="active">Resources</a>
-                <a href="about.html">About</a>
+                <a href="index.html" data-i18n="nav_home">Home</a>
+                <a href="resources.html" class="active" data-i18n="nav_resources">Resources</a>
+                <a href="about.html" data-i18n="nav_about">About</a>
+
+                <!-- Language Switcher -->
+                <div class="lang-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                    <button class="lang-btn" data-lang="uz">UZ</button>
+                </div>
+
                 <button class="quick-exit-btn" onclick="window.location.href='https://www.google.com'">
-                    Quick Exit <i class="fa-solid fa-person-running"></i>
+                    <span data-i18n="nav_quick_exit">Quick Exit</span> <i class="fa-solid fa-person-running"></i>
                 </button>
             </div>
         </nav>
@@ -34,38 +43,46 @@
         <!-- Resources Section -->
         <section id="resources-section" class="content-section">
             <div class="section-header">
-                <h2><span class="gradient-text">Resources</span> & Tools</h2>
-                <p>Curated support for your mental well-being.</p>
+                <h2><span class="gradient-text" data-i18n="resources_title">Resources</span> <span
+                        data-i18n="resources_tools_suffix">& Tools</span></h2>
+                <p data-i18n="resources_subtitle">Curated support for your mental well-being.</p>
             </div>
 
             <div class="resources-grid">
                 <!-- Tools Card -->
                 <div class="resource-card">
                     <div class="card-icon"><i class="fa-solid fa-wind"></i></div>
-                    <h3>Calming Tools</h3>
-                    <p>Simple techniques to ground yourself.</p>
+                    <h3 data-i18n="tools_card_title">Calming Tools</h3>
+                    <p data-i18n="tools_card_desc">Simple techniques to ground yourself.</p>
                     <ul class="tools-list">
-                        <li><i class="fa-solid fa-lungs"></i> <strong>Box Breathing:</strong> Inhale 4s, Hold 4s, Exhale
-                            4s, Hold 4s. Repeat.</li>
-                        <li><i class="fa-solid fa-hand-holding-heart"></i> <strong>5-4-3-2-1 Technique:</strong> Name 5
-                            things you see, 4 you feel, 3 you hear, 2 you smell, 1 you taste.</li>
-                        <li><i class="fa-solid fa-spa"></i> <strong>Progressive Relaxation:</strong> Tense and release
-                            each muscle group from toes to head.</li>
+                        <li><i class="fa-solid fa-lungs"></i> <strong data-i18n="tool_breathing_title">Box
+                                Breathing:</strong> <span data-i18n="tool_breathing_desc">Inhale 4s, Hold 4s, Exhale
+                                4s, Hold 4s. Repeat.</span></li>
+                        <li><i class="fa-solid fa-hand-holding-heart"></i> <strong
+                                data-i18n="tool_54321_title">5-4-3-2-1 Technique:</strong> <span
+                                data-i18n="tool_54321_desc">Name 5
+                                things you see, 4 you feel, 3 you hear, 2 you smell, 1 you taste.</span></li>
+                        <li><i class="fa-solid fa-spa"></i> <strong data-i18n="tool_relaxation_title">Progressive
+                                Relaxation:</strong> <span data-i18n="tool_relaxation_desc">Tense and release
+                                each muscle group from toes to head.</span></li>
                     </ul>
                 </div>
 
                 <!-- Education Card -->
                 <div class="resource-card">
                     <div class="card-icon"><i class="fa-solid fa-book-open-reader"></i></div>
-                    <h3>Understanding Mental Health</h3>
-                    <p>Knowledge is power.</p>
+                    <h3 data-i18n="edu_card_title">Understanding Mental Health</h3>
+                    <p data-i18n="edu_card_desc">Knowledge is power.</p>
                     <ul class="tools-list">
-                        <li><a href="https://www.nimh.nih.gov/health/topics/anxiety-disorders"
-                                target="_blank">Understanding Anxiety</a></li>
-                        <li><a href="https://www.nimh.nih.gov/health/topics/depression" target="_blank">Signs of
+                        <li><a href="https://www.nimh.nih.gov/health/topics/anxiety-disorders" target="_blank"
+                                data-i18n="edu_link_anxiety">Understanding Anxiety</a></li>
+                        <li><a href="https://www.nimh.nih.gov/health/topics/depression" target="_blank"
+                                data-i18n="edu_link_depression">Signs of
                                 Depression</a></li>
-                        <li><a href="https://www.mentalhealthfirstaid.org" target="_blank">How to help a friend</a></li>
-                        <li><a href="https://www.activeminds.org" target="_blank">Student Mental Health Resources</a>
+                        <li><a href="https://www.mentalhealthfirstaid.org" target="_blank"
+                                data-i18n="edu_link_help_friend">How to help a friend</a></li>
+                        <li><a href="https://www.activeminds.org" target="_blank"
+                                data-i18n="edu_link_student_resources">Student Mental Health Resources</a>
                         </li>
                     </ul>
                 </div>
@@ -73,45 +90,58 @@
                 <!-- Sleep Card -->
                 <div class="resource-card">
                     <div class="card-icon"><i class="fa-solid fa-bed"></i></div>
-                    <h3>Sleep Hygiene</h3>
-                    <p>Better sleep, better mental health.</p>
+                    <h3 data-i18n="sleep_card_title">Sleep Hygiene</h3>
+                    <p data-i18n="sleep_card_desc">Better sleep, better mental health.</p>
                     <ul class="tools-list">
-                        <li><i class="fa-solid fa-clock"></i> Keep a consistent sleep schedule</li>
-                        <li><i class="fa-solid fa-mobile-screen"></i> Avoid screens 1 hour before bed</li>
-                        <li><i class="fa-solid fa-mug-hot"></i> Limit caffeine after 2 PM</li>
-                        <li><i class="fa-solid fa-moon"></i> Create a dark, cool sleep environment</li>
+                        <li><i class="fa-solid fa-clock"></i> <span data-i18n="sleep_tip_1">Keep a consistent sleep
+                                schedule</span></li>
+                        <li><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="sleep_tip_2">Avoid screens 1 hour
+                                before bed</span></li>
+                        <li><i class="fa-solid fa-mug-hot"></i> <span data-i18n="sleep_tip_3">Limit caffeine after 2
+                                PM</span></li>
+                        <li><i class="fa-solid fa-moon"></i> <span data-i18n="sleep_tip_4">Create a dark, cool sleep
+                                environment</span></li>
                     </ul>
                 </div>
 
                 <!-- Professional Help Card -->
                 <div class="resource-card">
                     <div class="card-icon"><i class="fa-solid fa-user-doctor"></i></div>
-                    <h3>Find Professional Support</h3>
-                    <p>Connect with qualified mental health professionals.</p>
+                    <h3 data-i18n="pro_card_title">Find Professional Support</h3>
+                    <p data-i18n="pro_card_desc">Connect with qualified mental health professionals.</p>
                     <ul class="tools-list">
-                        <li><a href="https://www.psychologytoday.com/us/therapists" target="_blank">Find a Therapist</a>
+                        <li><a href="https://www.psychologytoday.com/us/therapists" target="_blank"
+                                data-i18n="pro_link_therapist">Find a Therapist</a>
                         </li>
-                        <li><a href="https://www.betterhelp.com" target="_blank">Online Therapy (BetterHelp)</a></li>
-                        <li><a href="https://www.talkspace.com" target="_blank">Online Therapy (Talkspace)</a></li>
-                        <li>Check your school's counseling center</li>
+
+                        <li><a href="https://www.talkspace.com" target="_blank" data-i18n="pro_link_talkspace">Online
+                                Therapy (Talkspace)</a></li>
+                        <li><span data-i18n="pro_link_school">Check your school's counseling center</span></li>
                     </ul>
                 </div>
 
                 <!-- Apps Card -->
                 <div class="resource-card">
                     <div class="card-icon"><i class="fa-solid fa-mobile"></i></div>
-                    <h3>Helpful Apps</h3>
-                    <p>Digital tools for mental wellness.</p>
+                    <h3 data-i18n="apps_card_title">Helpful Apps</h3>
+                    <p data-i18n="apps_card_desc">Digital tools for mental wellness.</p>
                     <ul class="tools-list">
-                        <li><i class="fa-solid fa-spa"></i> <strong>Headspace:</strong> Meditation & mindfulness</li>
-                        <li><i class="fa-solid fa-heart"></i> <strong>Calm:</strong> Sleep & relaxation</li>
-                        <li><i class="fa-solid fa-pen"></i> <strong>Daylio:</strong> Mood tracking journal</li>
-                        <li><i class="fa-solid fa-brain"></i> <strong>Sanvello:</strong> Anxiety & depression tools</li>
+                        <li><i class="fa-solid fa-spa"></i> <strong>Headspace:</strong> <span
+                                data-i18n="app_headspace_desc">Meditation & mindfulness</span></li>
+                        <li><i class="fa-solid fa-heart"></i> <strong>Calm:</strong> <span
+                                data-i18n="app_calm_desc">Sleep & relaxation</span></li>
+                        <li><i class="fa-solid fa-pen"></i> <strong>Daylio:</strong> <span
+                                data-i18n="app_daylio_desc">Mood tracking journal</span></li>
+                        <li><i class="fa-solid fa-brain"></i> <strong>Sanvello:</strong> <span
+                                data-i18n="app_sanvello_desc">Anxiety & depression tools</span></li>
                     </ul>
                 </div>
             </div>
         </section>
     </div>
+    <script src="translations.js"></script>
+    <script src="script.js"></script>
+
 </body>
 
 </html>
